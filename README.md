@@ -76,6 +76,10 @@ You can see all changes below:
     o Changed the index.py file to allow for email notifications via a
       cron job and the app engine task que
 
+2012-04-16 David Simandl david.simandl@gmail.com
+
+    o Note, on this date I deleted the old repro on GitHub.  From this
+      date on this changelog will be in sync with GitHub.  Changes previous       to this deletion are above...
 
 
 
