@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+{% extends "_base.htm" %}
+{% block bodycontent %}
+   <h2>Race Date Setter: About</h2>
+   <p>
+   Welcome to David's race date setter app.
+   This app will populate google calendar with 
+   a training schedule of your choice for a race date and distance
+   </p>
+
+   {% if programloaded %}
+   <p>
+   {{ programloaded }}
+   </p>
+   {% endif %}
+
+   {% if error %}
+   <p>
+   {{ error }}
+   </p>
+   {% endif %}
+
+{% endblock %}

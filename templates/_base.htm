@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>
+       {% block title %} Race Date Setter{% endblock %}
+    </title>
+    <link type="text/css" rel="stylesheet" href="/static/glike.css"/>
+    <link type="text/css" rel="stylesheet" href="/static/jquery.datepick.css"/>
+    <script type="text/javascript" src="/static/js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.datepick.js"></script>
+    <div id="bar" class="bar" style="display:none;">
+      <img id="img-bar" src="/static/bar.gif" alt="Loading"/>
+    </div>
+  </head>
+  <body>
+    <div id="header">
+    <h1><a href="index.htm">RaceDateSetter</a></h1>
+    <ul>
+      {% if username %}
+      <li><a href="programs"
+        {% ifequal path '/programs.htm' %}
+                   class="selected"
+                   {% endifequal %}
+                   >Programs</a></li>
+      {% endif %}
+      {% if username %}
+      <li><a href="calendars"
+        {% ifequal path '/calendars.htm' %}
+                   class="selected"
+                   {% endifequal %}
+                   >Calendar</a></li>
+      {% endif %}
+      {% if username %}
+      {% ifequal admin 'True' %}
+      <li><a href="/loaddb"
+        {% ifequal path '/loaddb.htm' %}
+              class="selected"
+              {% endifequal %}
+              >LoadtheDB</a></li>
+         {% endifequal %}
+         {% endif %}
+      {% if username %}
+      <li><a href='/message'
+          {% ifequal path '/message.htm' %}
+          class="selected"
+          {% endifequal %}
+          >Contact Us</a></li>
+      {% endif %}
+      {% if username %}
+      <li><a href="/userprofile"
+          {% ifequal path '/userprofile.htm' %}
+          class="selected"
+          {% endifequal %}
+          >Your Profile</a></li>
+      {% endif %}
+      {% if username %}
+      <li><a href={{logout}}>Logout ({{username}})</a></li>
+       {% else %}      
+       <li><a href="/index"
+            {% ifequal path "/index.htm" %}
+            class="selected"
+            {% endifequal %}
+            >Login</a></li>
+        {% endif %}
+    </ul>
+  </div>
+  <div id="bodycontent">
+    {% block bodycontent %}
+                  Replace this
+           {% endblock %}
+  </div>
+</body>
+</html>

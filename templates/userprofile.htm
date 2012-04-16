@@ -1,0 +1,32 @@
+{% extends "_base.htm" %}
+{% block bodycontent %}
+<h1>Profile information</h1>
+<p>
+Enter your profile information or verify that your profile information is
+correct 
+</p>
+<p>
+<form method="post" action="/userprofile">
+  <p> First Name: <input type="text" name="firstname" value="{{ user_list.firstname }}" required="required" /> </p>
+  <p> Last Name: <input type="text" name="lastname" value="{{ user_list.lastname }}" required="required" /> </p>
+  <!-- Will need to verify that this is actually an email address here -->
+  <p> Email Address: <input type="text" name="emailaddress" value="{{ user_list.emailaddress }}" required="required" /> </p>
+  <p> Email Notifications? 
+  {% ifequal user_list.notificationsetting 'Yes' %}
+  <input type="checkbox" name="notifications" value="Yes" checked /> 
+  {% else %}
+  <input type="checkbox" name="notifications" value="Yes" />
+  {% endifequal %}
+  </p>
+  <p> <input type="submit" value="Enter Preferences" /> 
+
+  <input type="button" value="Cancel" name="Cancel"
+  onclick="window.location='/'"`/>
+  </p>
+  {% if error %}
+  <p>
+  {{ error }}
+  </p>
+  {% endif %}
+</form>
+{% endblock %}

@@ -1,0 +1,21 @@
+application: racedatesetter
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /static
+  static_dir: static
+
+- url: /jobs
+  script: index.py
+  login: admin
+
+- url: /emailsender
+  script: index.py
+  login: admin
+
+- url: /.*
+  script: index.py
+
+

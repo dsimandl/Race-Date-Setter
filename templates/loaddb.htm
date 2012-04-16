@@ -1,0 +1,24 @@
+{% extends "_base.htm" %}
+{% block bodycontent %}
+<h1>Load the Database</h1>
+<p>
+Pick a training program to load into the database
+</p>
+<p>
+<form method="post" action="/loaddb">
+  <select name="program">
+    <option value="http://runningtimes.com/Article.aspx?ArticleID=5998">Running Times - Half Marathon Basic</option>
+    <option value="http://runningtimes.com/Article.aspx?ArticleID=5995">Running Times - Marathon Advanced</option>
+  </select>
+  <br />
+  <input type="submit" value="Load the DB" />
+  <input type="button" name="cancel" value="Cancel"
+     onclick="window.location='/'"/>
+</form>
+</p>
+{%if error %}
+<p>
+{{ error }}
+</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,11 @@
+indexes:
+
+- kind: programWeeks
+  properties:
+  - name: program
+  - name: week
+
+- kind: calendarHTML
+  properties:
+  - name: userid
+  - name: calendarHTML

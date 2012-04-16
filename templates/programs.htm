@@ -1,0 +1,49 @@
+{% extends "_base.htm" %}
+{% block bodycontent %}
+<h1>Pick program and race date</h1>
+<p>
+Pick the program below and your taget race date
+</p>
+<p>
+<form method="post" action="/programs">
+  <select name="program">
+    {% for program in program_list %}
+    <option value="{{ program.programName }}">{{ program.programName }}</option>
+    {% endfor %}
+  </select>
+  <br />
+  <script type="text/javascript">
+    $(function() {
+      $( "#datepicker" ).datepick();
+    });
+  </script>
+  <div class="datepicker">
+    <p> Race Date: <input type="text" id="datepicker" name="racedate" required="required" > </p>    
+  </div>
+  <p> Calendar Summery: <input type="text" name="calsummery" required="required"> </p>
+  <!-- get the user's location some other way at this point... -->
+  <p> Calendar Location: <select name="location">
+    <option value="America/New_York">Eastern Time</option>
+    <option value="America/Chicago">Central Time</option>
+    <option value="America/Denver">Mountain Time</option>
+    <option value="America/Los_Angeles">Pacific Time</option>
+  </select>
+  </p>
+  <!-- this is lame, should fade the background to gray or something.... -->
+    <input id='button-upload' type="submit" value="Enter Date!" />
+    <script type="text/javascript">
+       $(document).ready(function(){
+           $('#button-upload').click(function() {
+             $('#bar').show()
+             });
+           });
+    </script>
+  <input type="button" value="cancel" name="Cancel"
+  onclick="window.location='/'"/>
+  {% if error %}
+  <p>
+    {{ error }}
+    </p>
+   {% endif %}
+</form>
+{% endblock %}

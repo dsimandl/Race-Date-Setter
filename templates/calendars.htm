@@ -1,0 +1,44 @@
+{% extends "_base.htm" %}
+{% block bodycontent %}
+<h1>Calendars</h1>
+    {% if calendar_list %}
+<p>
+Pick a calendar to view it in this page
+</p>
+<form method="post" action="/calendars">
+  <p>
+  Calendars: <select name="calendarname">
+    {% for calendar in calendar_list %}
+    <option value="{{ calendar.calendarName }}">{{ calendar.calendarName }}</option>
+    {% endfor %}
+  </select>
+  </p>
+  <input type="submit" name="View Calendar" value="View Calendar" />
+  <input type="button" name="Cancel" value="Cancel"
+  onclick="window.location='/'"/>
+</form>
+
+<div id="calendarcontent">
+  Loading...
+</div>
+<script>
+  function updateCal() {
+    $.ajax({
+      url: "/calcontent",
+      cache: false,
+      success: function(html) {
+        $("#calendarcontent").html(html);
+      }
+    });
+    setTimeout('updateMsg()', 4000)
+  }
+  updateCal();
+</script>
+
+{% else %}
+<p>
+   There are no calendars with HTML created yet!
+   </p>
+   {% endif %}
+{% endblock %}
+

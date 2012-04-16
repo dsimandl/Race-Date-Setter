@@ -1,0 +1,6 @@
+cron:
+- description: Daily Mailer
+  url: /jobs
+  schedule: every day 3:30
+  timezone: America/New_York
+
