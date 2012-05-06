@@ -58,6 +58,7 @@ class calendarHTML(db.Model):
     userid = db.StringProperty()
     calendarId = db.StringProperty()
     calendarName = db.StringProperty()
+    calendarTimeZone = db.StringProperty()
     calendarHTML = db.StringProperty()
 
 # A Model for the user's profile and settings
@@ -249,7 +250,8 @@ class ProgramHandler(webapp.RequestHandler):
             created_calendar = service.calendars().insert(body=newcal).execute()
             storedcalendar = calendarHTML(userid=user.user_id(), 
                     calendarId = created_calendar['id'],
-                    calendarName=created_calendar['summary'],
+                    calendarName = created_calendar['summary'],
+                    calendarTimeZone = callocation,
                     calendarHTML='<iframe src="https://www.google.com/calendar/embed?src='+created_calendar['id']+'&ctz='+callocation+'" style="border:0" width="800" height="600" frameborder="0" scrolling="no"></iframe>')
             storedcalendar.put()
         except(DeadlineExceededError, HttpError):
@@ -472,7 +474,6 @@ class UserProfileHandler(webapp.RequestHandler):
             doRender(self, 'index.htm', { })
 
 
-
 class CronHandler(webapp.RequestHandler):
 
     def get(self):
@@ -482,23 +483,23 @@ class CronHandler(webapp.RequestHandler):
         # Eastern is 00, Chicago Central is -01, etc.  This does not adjust for
         # "Summer Time", ie daylight savings time
         bigtimezonedic = {'America/New_York' : 0, 'America/Detroit' : 0, 'America/Kentucky/Louisville' : 0, 'America/Kentucky/Monticello' : 0, 'America/Indiana/Indianapolis' : 0, 'America/Indiana/Vincennes' : 0, 'America/Indiana/Winamac' : 0, 'America/Indiana/Marengo' : 0, 'America/Indiana/Petersburg' : 0, 'America/Indiana/Vevay' : 0, 'America/Chicago' : 1, 'America/Indiana/Tell_City' : 1, 'America/Indiana/Knox': 1, 'America/Menominee' : 1, 'America/North_Dakota/Center' : 1, 'America/North_Dakota/New_Salem' : 1, 'America/Denver' : 2, 'America/Boise' : 2, 'America/Shiprock' : 2, 'America/Phoenix' : 2, 'America/Los_Angeles' : 3, 'America/Anchorage' : 4, 'America/Juneau' : 4, 'America/Yakutat' : 4, 'America/Nome' : 4, 'America/Adak' : 5, 'Pacific/Honolulu' : 5}
+        # We are just grabbing the TimeZone from the calendarHTML table, which
+        # might turn into an actual calendar table when we make our own cal and
+        # just sync with google cal instead of letting google cal completely
+        # host it
         calendar_list = calendarHTML.all()
         for calendar in calendar_list:
-             creds = StorageByKeyName(Credentials, calendar.userid, 'credentials').get()
-             http = httplib2.Http()
-             http = creds.authorize(http)
-             service = build(serviceName='calendar', version='v3', http=http,
-                developerKey='AIzaSyD51wdv-kO02p29Aog7OXmL2eEG0F5ngZM')
-             events = service.events().list(calendarId=calendar.calendarId).execute()
-             if bigtimezonedic.has_key(events['timezone']):
-                 if bigtimezonedic[events['timezone']] == 0:
-                    taskqueue.add(url='/emailsender', params={'calevent': events,
-                         'calendar' : calendar})
+             if bigtimezonedic.has_key(calendar.calendarTimeZone):
+                 if bigtimezonedic[calendar.calendarTimeZone] == 0:
+                    taskqueue.add(url='/emailsender',
+                            params=dict(calendaruserid=calendar.userid,
+                                calendarid=calendar.calendarId))
                  else:
-                    taskqueue.add(url='/emailsender', params={'calevent': events,
-                         'calendar' : calendar},
+                    taskqueue.add(url='/emailsender',
+                            params=dict(calendaruserid=calendar.userid,
+                                calendarid=calendar.calendarId),
                          eta=datetime.datetime.now() +
-                         datetime.timedelta(hours=bigtimezonedic[events['timezone']]))
+                         datetime.timedelta(hours=bigtimezonedic[calendar.calendarTimeZone]))
              else:
                 logging.info('There is an unsupported timezone!')
                 
@@ -506,13 +507,19 @@ class CronHandler(webapp.RequestHandler):
 class EmailSenderHandler(webapp.RequestHandler):
 
     def post(self):
-        events = self.request.get('calevent')
-        calendar = self.request.get('calendar')
+        calendaruserid = self.request.get('calendaruserid')
+        calendarid = self.request.get('calendarid')
+        creds = StorageByKeyName(Credentials, calendaruserid, 'credentials').get()
+        http = httplib2.Http()
+        http = creds.authorize(http)
+        service = build(serviceName='calendar', version='v3', http=http,
+                developerKey='AIzaSyD51wdv-kO02p29Aog7OXmL2eEG0F5ngZM')
+        events = service.events().list(calendarId=calendarid).execute()
         for event in events['items']:
             if str(datetime.date.today()) == event['start']['date']:
                 filterdiclist = []
                 filterdiclist.append({'operator' : 'userid = ', 'value' :
-                            calendar.userid })
+                            calendaruserid })
                 filterdiclist.append({'operator' : 'notificationsetting = ', 'value' : 'Yes'})
                 query = dbQuery()
                 user_list = query.get_results(userProfile, 1,
