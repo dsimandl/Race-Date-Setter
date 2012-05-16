@@ -404,10 +404,8 @@ class ListCalendars(webapp.RequestHandler):
         if user is None:
             self.redirect('index.htm')
         else:
-            filterdiclist = []
-            filterdiclist.append({'operator' : 'userid = ', 'value':
-                user.user_id()})
-            filterdiclist.append({'operator' : 'calendarHTML != ', 'value': None})
+            filterdiclist = [{'operator' : 'userid = ', 'value':
+                user.user_id()}, {'operator' : 'calendarHTML != ', 'value': None}]
             query = dbQuery()
             calendar_list = query.get_results(calendarHTML, 100, filterdiclist)
             doRender(self, 'calendars.htm', {'calendar_list' : calendar_list})
@@ -422,9 +420,8 @@ class CalendarHandler(webapp.RequestHandler):
 
     def get(self):
         self.session = Session()
-        filterdiclist = []
-        filterdiclist.append({'operator' : 'calendarName = ', 'value' :
-            self.session['selectedcal']})
+        filterdiclist = [{'operator' : 'calendarName = ', 'value' :
+            self.session['selectedcal']}]
         query = dbQuery()
         calendar_list = query.get_results(calendarHTML, 1, filterdiclist)
         doRender(self, 'calendarcontent.htm', {'calendarcontent' :
@@ -438,9 +435,7 @@ class UserProfileHandler(webapp.RequestHandler):
         if user is None:
             self.redirect('index.htm')
         else:
-            filterdiclist = []
-            filterdiclist.append({'operator' : 'userid = ', 'value' :
-                user.user_id()})
+            filterdiclist = [{'operator' : 'userid = ', 'value' : user.user_id()}]
             query = dbQuery()
             user_list = query.get_results(userProfile, 1, filterdiclist)
             if not user_list:
@@ -517,10 +512,8 @@ class EmailSenderHandler(webapp.RequestHandler):
         events = service.events().list(calendarId=calendarid).execute()
         for event in events['items']:
             if str(datetime.date.today()) == event['start']['date']:
-                filterdiclist = []
-                filterdiclist.append({'operator' : 'userid = ', 'value' :
-                            calendaruserid })
-                filterdiclist.append({'operator' : 'notificationsetting = ', 'value' : 'Yes'})
+                filterdiclist = [{'operator' : 'userid = ', 'value' :
+                            calendaruserid},{'operator' : 'notificationsetting = ', 'value' : 'Yes'}]
                 query = dbQuery()
                 user_list = query.get_results(userProfile, 1,
                                 filterdiclist)
